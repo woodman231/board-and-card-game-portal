@@ -1,0 +1,19 @@
+services:
+  http:
+    build:
+      context: ../nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+  app:
+    build:
+      context: ../front-end
+      dockerfile: Dockerfile
+    volumes:
+      - ../front-end:/app:cached
+  socket:
+    build:
+      context: ../socket-io
+      dockerfile: Dockerfile
+    volumes:
+      - ../socket-io:/app:cached
