@@ -1,66 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { socket } from './socket';
-import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePage from './features/homepage/components/homePage'
-import ChatRoomPage from './features/chatroom/components/chatRoomPage'
+import HomePage from './features/homepage/components/homePage';
+import ChatRoomPage from './features/chatroom/pages/chatRoomPage';
+import ChatRoomHomePage from './features/chatroom/pages/chatRoomHomePage';
+import { useGetUserDataQuery } from './features/auth/services/authService';
+import { useTypedSelector } from './store';
 
-function App() {
+interface StarShape {
+  id: string;
+  x: number;
+  y: number;
+  rotation: number;
+  isDragging: boolean;
+}
 
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [roomCode, setRoomCode] = useState<string>('');
-  const [messages, setMessages] = useState<string[]>([]);
+function App() {  
 
-  useEffect(() => {    
-    function onConnect() {
-      socket.emit('hello');
-      setIsConnected(true);
-    }
+  const { isLoggedIn, user } = useTypedSelector(state => state.auth);  
 
-    function onRoomCreatedReply(data: {roomCode: string}) {
-        console.log("onRoomCreatedReply triggered with data: ", data);
-        setRoomCode(data.roomCode);
-    }
-
-    function onMessage({message}: {message: string}) {
-        console.log("onMessage triggered with message: ", message);
-        setMessages( messages => [...messages, message] );
-    }
-
-    function onDisconnect() {
-        setIsConnected(false);
-    }
-
-    socket.on('connect', onConnect);
-    socket.on('roomCreatedReply', onRoomCreatedReply);
-    socket.on('message', onMessage);
-    socket.on('disconnect', onDisconnect);
-
-    return () => {
-        socket.off('connect', onConnect);
-        socket.off('roomCreatedReply', onRoomCreatedReply);
-        socket.off('message', onMessage);
-        socket.off('disconnect', onDisconnect);
-    }
-
-  }, [])
+  useGetUserDataQuery();  
 
   useEffect(() => {
-    setIsConnected(socket.connected);
-  }, [socket.connected]);
-
-  useEffect(() => {
-    console.log("roomCode changed to: ", roomCode);
-    if(roomCode) {
-      socket.emit('joinRoom', {roomCode: roomCode});
+    if (isLoggedIn && user) {
+      socket.connect();
     }
-  }, [roomCode]);
+  }, [isLoggedIn, user]);
+
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage roomCode={roomCode} setRoomCode={setRoomCode} isConnected={isConnected} />} />
-        <Route path="/chatroom/:roomCode" element={<ChatRoomPage roomCode={roomCode} messages={messages} />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/chatroom" element={<ChatRoomHomePage />} />
+        <Route path="/chatroom/:roomCode" element={<ChatRoomPage />} />
       </Routes>
     </BrowserRouter>
   );

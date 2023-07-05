@@ -5,15 +5,50 @@ services:
       dockerfile: Dockerfile
     ports:
       - 80:80
+    depends_on:
+      - auth
+      - app
+      - socket
+  auth:
+    build:
+      context: ../auth
+      dockerfile: Dockerfile
+    environment:
+      - GITHUB_CLIENT_ID=${AUTH_GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${AUTH_GITHUB_CLIENT_SECRET}
+      - GITHUB_CALLBACK_URL=${AUTH_GITHUB_CALLBACK_URL}
+    volumes:
+      - ../auth:/app:cached
+    depends_on:
+      - db
+      - redis
   app:
     build:
       context: ../front-end
       dockerfile: Dockerfile
     volumes:
       - ../front-end:/app:cached
+    depends_on:
+      - auth
+      - socket      
   socket:
     build:
       context: ../socket-io
       dockerfile: Dockerfile
     volumes:
       - ../socket-io:/app:cached
+    depends_on:
+      - db
+      - redis
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379    
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
