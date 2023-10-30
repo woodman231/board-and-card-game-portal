@@ -102,7 +102,10 @@ const HomePage = () => {
                 isLoggedIn && (
                     <ul className='list-disc ml-4'>
                         <li>
-                            <Link to='/chatroom'>Go to Chat Room</Link>
+                            <Link to='/chatroom'>Go to Chat Room</Link>                            
+                        </li>
+                        <li>
+                            <Link to="/named-socket-test">Go to Named Socket Test</Link>
                         </li>
                     </ul>
                 )

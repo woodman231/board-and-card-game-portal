@@ -33,10 +33,12 @@ const ChatRoomPage = () => {
             socket.off("message", onMessageReceived);
             socket.off("setStarShapes", onStarsReceived);
         }
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
-        socket.emit('joinRoom', { roomCode: chatRoomCode });
+        if (chatRoomCode) {
+            socket.emit('joinRoom', { roomCode: chatRoomCode });
+        }
     }, [chatRoomCode])
 
     return (

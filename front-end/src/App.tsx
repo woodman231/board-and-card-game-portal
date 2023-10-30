@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from './features/homepage/components/homePage';
 import ChatRoomPage from './features/chatroom/pages/chatRoomPage';
 import ChatRoomHomePage from './features/chatroom/pages/chatRoomHomePage';
+import NamedSocketTest from './features/namedSocketTest';
 import { useGetUserDataQuery } from './features/auth/services/authService';
 import { useTypedSelector } from './store';
 
@@ -34,6 +35,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/chatroom" element={<ChatRoomHomePage />} />
         <Route path="/chatroom/:roomCode" element={<ChatRoomPage />} />
+        <Route path="/named-socket-test" element={<NamedSocketTest />} />
       </Routes>
     </BrowserRouter>
   );

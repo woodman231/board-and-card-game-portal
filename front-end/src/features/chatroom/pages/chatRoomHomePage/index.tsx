@@ -16,15 +16,6 @@ function ChatRoomHomePage() {
     const pageTitle = "Chat Room Home Page";
     const pageDescription = "The starting place for a chat room";
 
-    if (!isLoggedIn || !user) {
-        return (
-            <DefaultLayout pageTitle={pageTitle} pageDescription={pageDescription}>
-                <p>You must be logged in to use this feature</p>
-                <SignInButton />
-            </DefaultLayout>
-        )
-    }
-
     useEffect(() => {
         function onRoomCreatedReply(data: {roomCode: string}) {            
             dispatch(setChatRoomCode(data.roomCode));
@@ -36,7 +27,16 @@ function ChatRoomHomePage() {
         return () => {            
             socket.off('roomCreatedReply', onRoomCreatedReply);            
         }
-    }, []);
+    }, [dispatch, navigate]);
+
+    if (!isLoggedIn || !user) {
+        return (
+            <DefaultLayout pageTitle={pageTitle} pageDescription={pageDescription}>
+                <p>You must be logged in to use this feature</p>
+                <SignInButton />
+            </DefaultLayout>
+        )
+    }
 
     return (
         <>
